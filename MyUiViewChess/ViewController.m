@@ -43,6 +43,9 @@
     
     self.isColorChanged  = NO;
     self.views  = [NSMutableArray<UIView*>  array];
+    self.whiteCheckers  = [NSMutableArray<UIView*>  array];
+    self.redCheckers  = [NSMutableArray<UIView*>  array];
+    
     self.orientationBefore= 505555;
     srand((unsigned int)time(NULL));
     CGRect   fr  = self.view.frame;
@@ -65,10 +68,6 @@
         for (NSInteger column =  0; column < 8; column ++)
         {
             CGRect  cellFrame  =  CGRectMake(startY * 1 + column * cellHeigh, startX * 1 + row * cellWidth , cellWidth, cellHeigh);
-            
-            
-            
-            
             BOOL isBlack  = (row % 2 + column)%2;
             UIColor  *blackCellColor =  [[UIColor blackColor] colorWithAlphaComponent:0.8];
             UIColor  *brownCellColor  = [[UIColor brownColor] colorWithAlphaComponent:0.8];
@@ -78,6 +77,7 @@
             UITextField   *tf   = [[UITextField alloc]  initWithFrame: CGRectMake(0, 0, 30, 20)];
             tf.text  =  [NSString  stringWithFormat:@"%li",(count++)];
             [v addSubview: tf];
+            v.tag  = row * 8 + column;
             [self.view addSubview: v];
             [self.views addObject: v];
         }
@@ -95,75 +95,43 @@
 
 -(void)viewWillLayoutSubviews
 {
-   
     CGRect   r = self.views.firstObject.frame;
-    
     NSLog(@"Frame = %@", NSStringFromCGRect(r));
-    
-    
     NSArray   *arr =@[
                       @"UIDeviceOrientationPortrait",
                       @"UIDeviceOrientationPortraitUpsideDown",
                       @"UIDeviceOrientationPortraitUpsideDown",
                       @"UIDeviceOrientationLandscapeLeft"
                       ];
-    
     UIInterfaceOrientation  orientation  = [[UIApplication sharedApplication] statusBarOrientation];
     NSLog(@"viewWillLayoutSubviews orientation = %li:%li",orientation, [UIDevice currentDevice].orientation);
     NSLog(@"Orientation is \'%@\'", [arr objectAtIndex: orientation -1]);
-    
-    
     if(self.orientationBefore  == 505555)
     {
         self.orientationBefore  = orientation;
     }
     else
     {
-        
-       // NSLog(@"");
         if(orientation != self.orientationBefore)
         {
          //   NSLog(@"Перекрашиваем  черные (или места черных)");
-            [self setAllViewBlackToOther];
+         //  [self setAllViewBlackToOther];
         }
-        
         if(self.orientationBefore >=3  && orientation <= 2)
         {
             
            // NSLog(@"Из горизонтального в вертикальное");
             [self swapXYInViews];
+            [self swapXYInCheckers];
         }
-        
         if(self.orientationBefore <=2  && orientation >= 3)
         {
            // NSLog(@"Из вертикального  в горизонтальное");
             [self swapXYInViews];
+            [self swapXYInCheckers];
         }
-        
         self.orientationBefore  = orientation;
-
-        
     }
-    
-    
-   //    switch (orientation) {
-//        case 1:
-//            [self setAllViewResizingMask: UIViewAutoresizingFlexibleLeftMargin];
-//            
-//            break;
-//        case 2:
-//            [self setAllViewResizingMask: UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin];
-//            break;
-//        case 3:
-//            [self setAllViewResizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin];
-//            break;
-//        case 4:
-//            [self setAllViewResizingMask: UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin];
-//            break;
-//            
-//        default:
-//            break;
-//    }
 }
 
 -(void)setAllViewResizingMask: (UIViewAutoresizing) ar
@@ -217,6 +185,12 @@
 
 -(void)swapXYInViews
 {
+    NSLog(@"swapXYInViews");
+  //  NSInteger   i = 0;
+  //  NSInteger  count  = 0;
+  //  NSInteger  redCount = 0;
+  //  NSInteger  whiteCount = 0;
+    
     for (UIView *v in self.views)
     {
         CGRect    fr  = v.frame;
@@ -225,6 +199,99 @@
         fr.origin.y  = t;
         v.frame  = fr;
         
+//        UIView *redCheck    =  [self.redCheckers  objectAtIndex: redCount];
+//        UIView *whiteCheck  =  [self.whiteCheckers  objectAtIndex: whiteCount];
+//        NSLog(@"v.tag = %li, redCheck.tag = %li, whiteCheck.tag = %li", v.tag, redCheck.tag, whiteCheck.tag);
+//        if(v.tag == whiteCheck.tag)
+//        {
+//            CGRect   frCheck   = fr;
+//            frCheck.origin.x += fr.size.width / 4.0;
+//            frCheck.origin.y += fr.size.height / 4.0;
+//            frCheck.size.width  *=  0.5;
+//            frCheck.size.height  *=  0.5;
+//            whiteCheck.frame  = frCheck;
+//            whiteCount++;
+//            NSLog(@"Обмен белых %li",whiteCount);
+//        }
+//        else
+//        if(v.tag == redCheck.tag)
+//        {
+//            CGRect   frCheck   = fr;
+//            frCheck.origin.x += fr.size.width / 4.0;
+//            frCheck.origin.y += fr.size.height / 4.0;
+//            frCheck.size.width  *=  0.5;
+//            frCheck.size.height  *=  0.5;
+//            redCheck.frame  = frCheck;
+//            redCount++;
+//            NSLog(@"Обмен красных %li",redCount);
+//        }
+      //  [self.views replaceObjectAtIndex:count++ withObject: v];
+        
+    }
+}
+
+-(void)swapXYInCheckers
+{
+    //return;
+    NSLog(@"Start Checkers SWAP!\n\n");
+    NSInteger  count  = 0;
+    NSLog(@"White");
+    for (NSInteger i = 0; i < 12; i++)
+    {
+        UIView *v = [self.whiteCheckers  objectAtIndex: i];
+        count = 1 + i * 2 - ((i) / 4) % 2;
+        UIView  *vv   =  [self.views objectAtIndex: count ];
+        CGRect   fr  = vv.frame;
+        NSLog(@"i = %li , count = %li, view.tag =%li",i , count, vv.tag);
+        NSLog(@"viewFrame = %@", NSStringFromCGRect(fr) );
+        
+        
+        
+        fr.origin.x += fr.size.width / 4.0;
+        fr.origin.y += fr.size.height / 4.0;
+        fr.size.width  *=  0.5;
+        fr.size.height  *=  0.5;
+        
+//        CGFloat  t =  fr.origin.x;
+//        fr.origin.x  = fr.origin.y;
+//        fr.origin.y  = t;
+
+        //UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
+       // checker.backgroundColor   = [[UIColor whiteColor ]  colorWithAlphaComponent: 0.7];
+        v.frame  = fr;
+        NSLog(@"NewCheckFrame = %@", NSStringFromCGRect(fr) );
+      /////  [self.whiteCheckers replaceObjectAtIndex: i withObject: v];
+      //  [self.view addSubview: checker];
+      //  [self.whiteCheckers  addObject: checker];
+    }
+     NSLog(@"\n\n\n");
+    NSLog(@"Red");
+    for (NSInteger i = 0; i < 12; i++ )
+    {
+        UIView *v = [self.redCheckers  objectAtIndex: i];
+        count = 40 + i * 2 + ((i) / 4  ) % 2;
+        UIView  *vv   =  [self.views objectAtIndex: count ];
+        CGRect   fr  = vv.frame;
+        NSLog(@"i = %li , count = %li, view.tag =%li",i , count, vv.tag);
+        //CGRect   fr   =  [self.views objectAtIndex: count ].frame;
+        NSLog(@"viewFrame = %@", NSStringFromCGRect(fr) );
+        fr.origin.x += fr.size.width / 4.0;
+        fr.origin.y += fr.size.height / 4.0;
+        fr.size.width  *=  0.5;
+        fr.size.height  *=  0.5;
+//        
+//        CGFloat  t =  fr.origin.x;
+//        fr.origin.x  = fr.origin.y;
+//        fr.origin.y  = t;
+//
+        
+        v.frame  = fr;
+        NSLog(@"NewCheckFrame = %@", NSStringFromCGRect(fr) );
+     //   [self.whiteCheckers replaceObjectAtIndex: i withObject: v];
+//        UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
+//        checker.backgroundColor   = [[UIColor redColor ]  colorWithAlphaComponent: 0.7];
+//        [self.view addSubview: checker];
+//        [self.redCheckers  addObject: checker];
     }
 }
 
@@ -232,42 +299,53 @@
 -(void)addCheckers
 {
     //CGRect   fr   =  self.views.firstObject.frame;
-    
+    NSLog(@"Add checkers");
     NSInteger  count  = 0;
-    
     for (NSInteger i = 0; i < 12; i++)
     {
-        
         count = 1 + i * 2 - ((i) / 4) % 2;
          NSLog(@"i = %li , count = %li",i , count);
-        CGRect   fr   =  [self.views objectAtIndex: count ].frame;
+        UIView *vv   =  [self.views objectAtIndex: count ];
+        
+        CGRect   fr     = vv.frame;
         fr.origin.x += fr.size.width / 4.0;
         fr.origin.y += fr.size.height / 4.0;
         fr.size.width  *=  0.5;
         fr.size.height  *=  0.5;
         UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
-        checker.backgroundColor   = [[UIColor whiteColor ]  colorWithAlphaComponent: 0.8];
+        checker.backgroundColor   = [[UIColor yellowColor ]  colorWithAlphaComponent: 0.7];
+        checker.tag  = vv.tag;
+        
+        UITextField   *tf   = [[UITextField alloc]  initWithFrame: CGRectMake(0, 0, fr.size.width, fr.size.height)];
+        tf.text  = [NSString  stringWithFormat:@"%li", i];
+        
+        [checker  addSubview: tf];
+
+        
         [self.view addSubview: checker];
         [self.whiteCheckers  addObject: checker];
     }
-    
+    NSLog(@"\n\n\n");
     for (NSInteger i = 0; i < 12; i++ )
     {
         count = 40 + i * 2 + ((i) / 4  ) % 2;
         NSLog(@"i = %li , count = %li",i , count);
-        CGRect   fr   =  [self.views objectAtIndex: count ].frame;
+        UIView *vv   =  [self.views objectAtIndex: count ];
+        CGRect   fr     = vv.frame;
         fr.origin.x += fr.size.width / 4.0;
         fr.origin.y += fr.size.height / 4.0;
         fr.size.width  *=  0.5;
         fr.size.height  *=  0.5;
         UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
-        checker.backgroundColor   = [[UIColor redColor ]  colorWithAlphaComponent: 0.8];
+        checker.backgroundColor   = [[UIColor redColor ]  colorWithAlphaComponent: 0.7];
+        checker.tag  = vv.tag;
+        UITextField   *tf   = [[UITextField alloc]  initWithFrame: CGRectMake(0, 0, fr.size.width, fr.size.height)];
+        tf.text  = [NSString  stringWithFormat:@"%li", i];
+        [checker  addSubview: tf];
+        
         [self.view addSubview: checker];
         [self.redCheckers  addObject: checker];
     }
-    
-    
-    
 }
 
 @end

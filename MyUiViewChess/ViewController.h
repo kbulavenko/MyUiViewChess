@@ -11,12 +11,22 @@
 @interface ViewController : UIViewController
 
 
-@property  (strong) NSMutableArray<UIView *>    *views;
-@property (strong)  NSMutableArray<UIView *>    *whiteCheckers;
-@property (strong)  NSMutableArray<UIView *>    *redCheckers;
+@property  (strong,atomic, nonnull) NSMutableArray<UIView *>    *views;
+@property (strong, atomic, nonnull)  NSMutableArray<UIView *>    *whiteCheckers;
+@property (strong, atomic, nonnull)  NSMutableArray<UIView *>    *redCheckers;
 
 @property  BOOL    isColorChanged;
 @property  UIInterfaceOrientation  orientationBefore;
+
+
+-(void)swapXYInViews;
+
+-(void)swapXYInCheckers;
+-(void)addCheckers;
+-(void)setAllViewResizingMask: (UIViewAutoresizing) ar;
+-(void)setAllViewBlackToOther;
+
+
 
 
 @end
