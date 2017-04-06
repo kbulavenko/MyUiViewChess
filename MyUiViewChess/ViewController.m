@@ -36,7 +36,7 @@
 @end
 
 @implementation ViewController
-@synthesize views, isColorChanged, orientationBefore;
+@synthesize views, isColorChanged, orientationBefore, whiteCheckers, redCheckers;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -51,30 +51,40 @@
     CGFloat  startX = 0.0, startY = 0.0;
     if(cellWidth > cellHeigh)
     {
-        startX = (fr.size.width - fr.size.height) /2;
+        startY = (fr.size.width - fr.size.height) /2;
         cellWidth = cellHeigh;
     }
     else
     {
-        startY = (fr.size.height   - fr.size.width) /2;
+        startX = (fr.size.height   - fr.size.width) /2;
         cellHeigh  = cellWidth;
     }
-        
+    NSInteger  count = 0;
     for(NSInteger   row = 0 ; row < 8; row++)
     {
         for (NSInteger column =  0; column < 8; column ++)
         {
-            CGRect  cellFrame  =  CGRectMake(startX * 1 + row * cellWidth, startY * 1 + column * cellHeigh, cellWidth, cellHeigh);
+            CGRect  cellFrame  =  CGRectMake(startY * 1 + column * cellHeigh, startX * 1 + row * cellWidth , cellWidth, cellHeigh);
+            
+            
+            
+            
             BOOL isBlack  = (row % 2 + column)%2;
             UIColor  *blackCellColor =  [[UIColor blackColor] colorWithAlphaComponent:0.8];
             UIColor  *brownCellColor  = [[UIColor brownColor] colorWithAlphaComponent:0.8];
             UIView  *v  = [[UIView alloc]  initWithFrame: cellFrame];
             v.backgroundColor  = (isBlack)? blackCellColor: brownCellColor;
             //v.layoutMargins
+            UITextField   *tf   = [[UITextField alloc]  initWithFrame: CGRectMake(0, 0, 30, 20)];
+            tf.text  =  [NSString  stringWithFormat:@"%li",(count++)];
+            [v addSubview: tf];
             [self.view addSubview: v];
             [self.views addObject: v];
         }
     }
+    
+    [self addCheckers];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -110,23 +120,23 @@
     else
     {
         
-        NSLog(@"");
+       // NSLog(@"");
         if(orientation != self.orientationBefore)
         {
-            NSLog(@"Перекрашиваем  черные (или места черных)");
+         //   NSLog(@"Перекрашиваем  черные (или места черных)");
             [self setAllViewBlackToOther];
         }
         
         if(self.orientationBefore >=3  && orientation <= 2)
         {
             
-            NSLog(@"Из горизонтального в вертикальное");
+           // NSLog(@"Из горизонтального в вертикальное");
             [self swapXYInViews];
         }
         
         if(self.orientationBefore <=2  && orientation >= 3)
         {
-            NSLog(@"Из вертикального  в горизонтальное");
+           // NSLog(@"Из вертикального  в горизонтальное");
             [self swapXYInViews];
         }
         
@@ -218,5 +228,46 @@
     }
 }
 
+
+-(void)addCheckers
+{
+    //CGRect   fr   =  self.views.firstObject.frame;
+    
+    NSInteger  count  = 0;
+    
+    for (NSInteger i = 0; i < 12; i++)
+    {
+        
+        count = 1 + i * 2 - ((i) / 4) % 2;
+         NSLog(@"i = %li , count = %li",i , count);
+        CGRect   fr   =  [self.views objectAtIndex: count ].frame;
+        fr.origin.x += fr.size.width / 4.0;
+        fr.origin.y += fr.size.height / 4.0;
+        fr.size.width  *=  0.5;
+        fr.size.height  *=  0.5;
+        UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
+        checker.backgroundColor   = [[UIColor whiteColor ]  colorWithAlphaComponent: 0.8];
+        [self.view addSubview: checker];
+        [self.whiteCheckers  addObject: checker];
+    }
+    
+    for (NSInteger i = 0; i < 12; i++ )
+    {
+        count = 40 + i * 2 + ((i) / 4  ) % 2;
+        NSLog(@"i = %li , count = %li",i , count);
+        CGRect   fr   =  [self.views objectAtIndex: count ].frame;
+        fr.origin.x += fr.size.width / 4.0;
+        fr.origin.y += fr.size.height / 4.0;
+        fr.size.width  *=  0.5;
+        fr.size.height  *=  0.5;
+        UIView   *checker   = [[UIView alloc]  initWithFrame: fr];
+        checker.backgroundColor   = [[UIColor redColor ]  colorWithAlphaComponent: 0.8];
+        [self.view addSubview: checker];
+        [self.redCheckers  addObject: checker];
+    }
+    
+    
+    
+}
 
 @end

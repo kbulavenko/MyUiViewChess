@@ -12,6 +12,9 @@
 
 
 @property  (strong) NSMutableArray<UIView *>    *views;
+@property (strong)  NSMutableArray<UIView *>    *whiteCheckers;
+@property (strong)  NSMutableArray<UIView *>    *redCheckers;
+
 @property  BOOL    isColorChanged;
 @property  UIInterfaceOrientation  orientationBefore;
 
