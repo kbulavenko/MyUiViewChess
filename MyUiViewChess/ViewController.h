@@ -11,5 +11,10 @@
 @interface ViewController : UIViewController
 
 
+@property  (strong) NSMutableArray<UIView *>    *views;
+@property  BOOL    isColorChanged;
+@property  UIInterfaceOrientation  orientationBefore;
+
+
 @end
 
