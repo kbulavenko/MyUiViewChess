@@ -11,9 +11,10 @@
 @interface ViewController : UIViewController
 
 
-@property  (strong,atomic, nonnull) NSMutableArray<UIView *>    *views;
+@property  (strong,atomic, nonnull)  NSMutableArray<UIView *>    *views;
 @property (strong, atomic, nonnull)  NSMutableArray<UIView *>    *whiteCheckers;
 @property (strong, atomic, nonnull)  NSMutableArray<UIView *>    *redCheckers;
+//@property (strong, atomic, nonnull)  NSMutableArray<UIView *>    *blackViews;
 
 @property  BOOL    isColorChanged;
 @property  UIInterfaceOrientation  orientationBefore;
